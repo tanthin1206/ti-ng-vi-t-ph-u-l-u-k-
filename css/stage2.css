@@ -1,0 +1,316 @@
+/* =========================================================
+   CHẶNG 2 – CẦU GHÉP VẦN (thiết kế lại – toàn cảnh)
+   Khung cảnh vẽ bằng SVG (js/games/stage2-scene.js, 1600×900).
+   Kích thước dùng đơn vị cqw (theo bề ngang khung chơi).
+   ========================================================= */
+.play-board.g2-root { padding: 0 !important; background: none !important; }
+
+.g2-stage {
+  position: relative; container-type: inline-size;
+  width: min(100%, calc((100vh - 84px) * 1.778)); min-width: 300px; margin: 0 auto;
+  aspect-ratio: 16 / 9; border-radius: 26px; overflow: hidden;
+  box-shadow: 0 10px 0 color-mix(in srgb, var(--c) 45%, white), 0 18px 40px rgba(0,0,0,.18);
+  user-select: none; -webkit-user-select: none;
+}
+.g2-scene {
+  position: absolute; inset: 0;
+  background: linear-gradient(#7cc8ff, #cdeeff 55%, #2e9fe0 58%);
+  touch-action: none;
+}
+
+/* ---------- Khung cảnh SVG ---------- */
+.g2-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.g2-art .s2-cloud { animation: s2cloud 60s linear infinite; }
+.g2-art .s2-cloud.c2 { animation-duration: 80s; animation-delay: -30s; }
+.g2-art .s2-cloud.c3 { animation-duration: 70s; animation-delay: -50s; }
+@keyframes s2cloud { from { transform: translateX(-400px); } to { transform: translateX(1700px); } }
+.g2-art .s2-waves path { stroke-dasharray: 40 30; animation: s2wave 3.5s linear infinite; }
+@keyframes s2wave { to { stroke-dashoffset: -140; } }
+.g2-art .s2-lamp { animation: s2lamp 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 0; }
+.g2-art .s2-lamp:last-of-type { animation-delay: -1.3s; }
+@keyframes s2lamp { 50% { transform: rotate(4deg); } }
+
+/* ---------- Không khí: chim, gợn nước, bướm, ánh cổng ---------- */
+.g2-sky { position: absolute; inset: 0 0 60% 0; pointer-events: none; }
+.g2-bird { position: absolute; width: 2.4cqw; fill: none; stroke: #4b4b5a; stroke-width: 2.4; stroke-linecap: round; animation: birdFly linear infinite; }
+.g2-bird path { animation: flap .5s ease-in-out infinite alternate; transform-origin: 50% 70%; }
+.g2-bird.b1 { top: 14%; animation-duration: 26s; }
+.g2-bird.b2 { top: 22%; width: 1.8cqw; animation-duration: 32s; animation-delay: -12s; }
+.g2-bird.b3 { top: 10%; width: 1.5cqw; animation-duration: 38s; animation-delay: -22s; }
+@keyframes birdFly { from { left: -5%; transform: translateY(0); } 50% { transform: translateY(1.2cqw); } to { left: 105%; transform: translateY(0); } }
+@keyframes flap { to { transform: scaleY(.35); } }
+
+.g2-water { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.g2-ripple {
+  position: absolute; width: 5cqw; height: 1.4cqw; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.75); transform: translate(-50%, -50%) scale(.2); opacity: 0;
+  animation: ripple 4.5s ease-out infinite; animation-delay: var(--d);
+}
+@keyframes ripple { 10% { opacity: .9; } 100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; } }
+.g2-glint {
+  position: absolute; left: 20%; top: 58%; width: 60%; height: 42%;
+  background: repeating-linear-gradient(100deg, transparent 0 7%, rgba(255,255,255,.18) 8%, transparent 10% 18%);
+  background-size: 200% 100%; animation: glint 9s linear infinite;
+  -webkit-mask: radial-gradient(ellipse at 55% 45%, #000 30%, transparent 70%); mask: radial-gradient(ellipse at 55% 45%, #000 30%, transparent 70%);
+}
+@keyframes glint { to { background-position: -200% 0; } }
+
+.g2-fly-bug { position: absolute; font-size: 1.8cqw; pointer-events: none; animation: bug 9s ease-in-out infinite; filter: drop-shadow(0 2px 2px rgba(0,0,0,.2)); }
+.g2-fly-bug.f1 { left: 8%; top: 50%; }
+.g2-fly-bug.f2 { left: 62%; top: 72%; font-size: 1.4cqw; animation-delay: -4s; animation-duration: 11s; }
+@keyframes bug {
+  0%, 100% { transform: translate(0, 0) rotate(-8deg); } 25% { transform: translate(3cqw, -2cqw) rotate(10deg); }
+  50% { transform: translate(5cqw, 1cqw) rotate(-6deg); } 75% { transform: translate(1.5cqw, 2cqw) rotate(8deg); }
+}
+
+.g2-gate-glow {
+  position: absolute; left: 90%; top: 56%; width: 10%; height: 19%; transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(255,240,170,.95) 0%, rgba(255,220,120,.55) 35%, transparent 70%);
+  opacity: .25; pointer-events: none; transition: opacity .5s; animation: gatePulse 3s ease-in-out infinite; mix-blend-mode: screen;
+}
+.g2-gate-glow.on { opacity: 1; }
+@keyframes gatePulse { 50% { transform: translate(-50%, -50%) scale(1.12); } }
+
+/* ---------- Cây cầu gỗ vòm (không cột, không dây) ---------- */
+.g2-bridge {
+  --n: 3;
+  position: absolute; left: 18.5%; width: 63%; top: 52%; height: 19%; z-index: 2;
+}
+.g2-bshadow {          /* bóng cầu in xuống mặt nước */
+  position: absolute; left: 8%; right: 8%; top: 70%; height: 70%; border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(10,50,90,.34), transparent 70%); filter: blur(6px);
+}
+.g2-3d { position: absolute; inset: 0; perspective: 1100px; perspective-origin: 50% -30%; }
+.g2-deck { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateX(42deg); }
+.g2-planks {
+  position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: .5%;
+  transform-style: preserve-3d;
+}
+.g2-plank {
+  --lift: 0cqw;
+  position: relative; transform-style: preserve-3d; transform: translateZ(var(--lift));
+  border-radius: .5cqw;
+  background:
+    linear-gradient(180deg, #8a5629 0 9%, transparent 9% 91%, #8a5629 91%),       /* thanh dầm hai mép */
+    linear-gradient(160deg, #e2ae74, #c68b50);
+  box-shadow: inset 0 .25cqw 0 rgba(255,236,200,.55);
+}
+.g2-plank.first { border-radius: 1.4cqw .5cqw .5cqw 1.4cqw; }
+.g2-plank.last  { border-radius: .5cqw 1.4cqw 1.4cqw .5cqw; }
+.g2-plank::after {     /* mép dày phía trước của ván */
+  content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 22%;
+  transform-origin: top center; transform: rotateX(-90deg);
+  background: linear-gradient(#8a5629, #5e3b1c); border-radius: 0 0 .5cqw .5cqw;
+}
+.g2-plank.first::after { border-bottom-left-radius: 1.4cqw; }
+.g2-plank.last::after  { border-bottom-right-radius: 1.4cqw; }
+.g2-plank.plain { background: linear-gradient(180deg, #8a5629 0 9%, transparent 9% 91%, #8a5629 91%), repeating-linear-gradient(90deg, #d39a5f 0 30%, #c48a52 30% 33%); }
+.g2-face {
+  position: absolute; inset: 15% 8% 15%; border-radius: .9cqw; display: grid; place-items: center;
+  background: linear-gradient(165deg, #fffdf6, #f6e8cc);
+  box-shadow: inset 0 0 0 .22cqw rgba(160,110,60,.28), 0 .15cqw 0 rgba(255,255,255,.6);
+  transition: box-shadow .2s, background .2s;
+}
+.g2-plank:not(.filled) .g2-face { background: rgba(255,250,236,.5); box-shadow: inset 0 0 0 .22cqw rgba(140,90,40,.45); }
+.g2-plank.next:not(.filled) .g2-face { animation: nextGlow 1.4s ease-in-out infinite; }
+@keyframes nextGlow { 50% { box-shadow: inset 0 0 0 .35cqw #ffe27a, 0 0 1.4cqw rgba(255,230,120,.95); background: rgba(255,251,228,.9); } }
+.g2-plank.over .g2-face { box-shadow: inset 0 0 0 .4cqw #ffd84a, 0 0 1.8cqw #fff3a6; background: #fffbe8; }
+.g2-plank.target .g2-face { box-shadow: inset 0 0 0 .4cqw #7ab8f5, 0 0 1.6cqw #bfe0ff; }
+.g2-plank.filled .g2-face { box-shadow: inset 0 0 0 .22cqw #f2c04f, 0 0 1.1cqw rgba(255,214,90,.75); }
+.g2-plank.nope .g2-face { animation: shake .4s; }
+.g2-plank.thunk .g2-face { animation: thunk .38s ease-out; }
+@keyframes thunk { 30% { transform: scale(.92); } 65% { transform: scale(1.05); } }
+.g2-ghost, .g2-letter {
+  font-family: var(--font-title); font-weight: 800; line-height: 1; font-size: calc(5.4cqw * var(--fs));
+  grid-area: 1 / 1;
+}
+.g2-ghost { color: rgba(120,80,40,.25); }
+.g2-letter { color: #2f6fd6; text-shadow: 0 .2cqw 0 rgba(255,255,255,.9); }
+.g2-plank[data-i="1"] .g2-letter { color: #e0447a; }
+.g2-plank[data-i="2"] .g2-letter { color: #8a4fd8; }
+.g2-plank[data-i="3"] .g2-letter { color: #22a052; }
+.g2-plank[data-i="4"] .g2-letter { color: #e88a14; }
+.g2-plank.filled .g2-letter { animation: popIn .35s cubic-bezier(.2, 1.6, .4, 1); }
+.g2-bridge.done .g2-face { box-shadow: inset 0 0 0 .3cqw #ffd84a, 0 0 2cqw rgba(255,235,140,1); background: #fffbe6; animation: wave .6s ease-in-out; animation-delay: calc(var(--k) * .08s); }
+@keyframes wave { 50% { transform: translateY(-8%); } }
+
+/* ---------- Nhân vật ---------- */
+.g2-boy {
+  position: absolute; left: 12%; top: 80%; height: 27%; aspect-ratio: 293 / 420; z-index: 4;
+  transform: translate(-50%, -100%); pointer-events: none;
+  transition: left .65s ease-in-out, top .65s ease-in-out, height .65s ease-in-out, opacity .5s;
+}
+.g2-boy.instant { transition: none; }
+.g2-boy-img { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 .4cqw .3cqw rgba(0,0,0,.25)); }
+.g2-boy-emoji { font-size: 6cqw; display: grid; place-items: end center; }
+.g2-boy-shadow {
+  position: absolute; left: 15%; right: 15%; bottom: -3%; height: 8%; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,0,0,.35), transparent 70%);
+}
+.g2-boy.walking .g2-boy-img { animation: step .22s ease-in-out 3 alternate; }
+@keyframes step { to { transform: translateY(-7%) rotate(3deg); } }
+.g2-boy:not(.walking) .g2-boy-img { animation: idle 2.4s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes idle { 50% { transform: scaleY(1.025) translateY(-1%); } }
+.g2-boy.enter { opacity: 0; height: 12% !important; }
+.g2-boy.appear .g2-boy-img { animation: appear .5s ease-out; }
+@keyframes appear { from { opacity: 0; transform: translateX(-30%); } }
+
+/* ---------- Bảng gỗ treo (HUD) ---------- */
+.g2-hud { position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 6; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.g2-hud > * { pointer-events: auto; }
+.g2-sign, .g2-board {
+  position: relative; border-radius: 1.4cqw;
+  background:
+    repeating-linear-gradient(0deg, rgba(90,55,25,.12) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, #c98d55, #a9703c);
+  border: .35cqw solid #7a4a22;
+  box-shadow: inset 0 .25cqw 0 rgba(255,225,180,.45), inset 0 -.3cqw 0 rgba(60,30,10,.35), 0 .7cqw 1.2cqw rgba(0,0,0,.28);
+}
+.g2-sign { margin-top: 2.6cqw; padding: .8cqw 1.4cqw 1cqw; display: flex; flex-direction: column; align-items: center; gap: .6cqw; animation: signSway 5s ease-in-out infinite; transform-origin: top center; }
+@keyframes signSway { 50% { transform: rotate(.8deg); } }
+.g2-sign-rope { position: absolute; bottom: 100%; width: .45cqw; height: 4cqw; background: repeating-linear-gradient(160deg, #d8b47a 0 3px, #9c7a45 3px 6px); border-radius: 3px; }
+.g2-sign-rope.l { left: 18%; } .g2-sign-rope.r { right: 18%; }
+.g2-sign-dots { display: flex; gap: .55cqw; }
+.g2-sign-dots i { width: 1.05cqw; height: 1.05cqw; border-radius: 50%; background: rgba(255,240,215,.45); box-shadow: inset 0 1px 2px rgba(0,0,0,.3); transition: transform .2s; }
+.g2-sign-dots i.current { transform: scale(1.35); background: #fff3d1; box-shadow: 0 0 0 2px #ffd84a; }
+.g2-sign-dots i.ok { background: #7cc98a; }
+.g2-sign-dots i.half { background: #ffcf5c; }
+.g2-sign-row { display: flex; align-items: center; gap: 1cqw; }
+.g2-pic {
+  width: 7.2cqw; height: 7.2cqw; border-radius: 1.2cqw; display: grid; place-items: center; font-size: 4.8cqw; line-height: 1;
+  background: linear-gradient(160deg, #fffaf0, #f3e3c4); box-shadow: inset 0 0 0 .25cqw rgba(120,80,40,.3), 0 .3cqw 0 #6e4520;
+}
+.g2-pic.swing { animation: swingIn .7s cubic-bezier(.2, 1.4, .4, 1); }
+@keyframes swingIn { from { transform: rotate(-25deg) scale(.4); opacity: 0; } }
+.g2-speaker, .g2-hint {
+  border: none; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+  transition: transform .15s;
+}
+.g2-speaker { width: 5.6cqw; height: 5.6cqw; font-size: 2.7cqw; background: radial-gradient(circle at 35% 30%, #9fd0ff, #3d8be0); box-shadow: 0 .35cqw 0 #2a5f9e, 0 0 0 .3cqw rgba(255,255,255,.6); }
+.g2-speaker.speaking { animation: pulseSpk .8s ease-in-out infinite; }
+@keyframes pulseSpk { 50% { transform: scale(1.1); box-shadow: 0 .35cqw 0 #2a5f9e, 0 0 0 .9cqw rgba(160,210,255,.6); } }
+.g2-hint { width: 4cqw; height: 4cqw; font-size: 2cqw; background: radial-gradient(circle at 35% 30%, #fff6c8, #ffcf4a); box-shadow: 0 .3cqw 0 #c99a1e; }
+.g2-speaker:hover, .g2-hint:hover { transform: translateY(-2px) scale(1.05); }
+
+.g2-banner {
+  margin-top: .8cqw; padding: .5cqw 2cqw; border-radius: 99px; white-space: nowrap;
+  font-family: var(--font-title); font-weight: 800; font-size: calc(1.45cqw * var(--fs)); color: #6b4a2a;
+  background: linear-gradient(180deg, #fff8e6, #f5e2bd); box-shadow: 0 .3cqw 0 #c9a46c, 0 .5cqw 1cqw rgba(0,0,0,.18);
+  transition: background .2s, color .2s;
+}
+.g2-banner.good { background: linear-gradient(180deg, #e9fbe9, #c9efcf); color: #23803b; box-shadow: 0 .3cqw 0 #6dbb7c, 0 .5cqw 1cqw rgba(0,0,0,.18); font-size: calc(1.7cqw * var(--fs)); }
+.g2-banner.bad  { background: linear-gradient(180deg, #fff3e8, #ffdcc4); color: #c8501f; box-shadow: 0 .3cqw 0 #f0a27a, 0 .5cqw 1cqw rgba(0,0,0,.18); font-size: calc(1.7cqw * var(--fs)); }
+.g2-banner.pop { animation: statusPop .35s cubic-bezier(.2, 1.6, .4, 1); }
+
+/* ---------- Khay mảnh chữ ---------- */
+.g2-dock { position: absolute; left: 3%; right: 3%; bottom: 1.4cqw; z-index: 6; display: flex; justify-content: center; pointer-events: none; }
+.g2-dock > * { pointer-events: auto; }
+.g2-tray {
+  display: inline-flex; flex-wrap: nowrap; justify-content: center; gap: .9cqw; padding: .8cqw 1.4cqw;
+  border-radius: 1.6cqw;
+  background:
+    repeating-linear-gradient(0deg, rgba(90,55,25,.12) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, rgba(201,141,85,.96), rgba(160,104,56,.96));
+  border: .3cqw solid #7a4a22;
+  box-shadow: inset 0 .25cqw 0 rgba(255,225,180,.45), 0 .7cqw 1.4cqw rgba(0,0,0,.3);
+  touch-action: none;
+}
+.g2-tile, .g2-flying {
+  position: relative; min-width: 7cqw; height: 7cqw; padding: .6cqw; border-radius: 1cqw; border: none; cursor: grab;
+  background: linear-gradient(90deg, #b57b45, #dcaa74 40%, #cf9a62 75%, #b07440);
+  box-shadow: inset 0 .2cqw 0 rgba(255,235,200,.55), 0 .45cqw 0 #5e3b1c, 0 .7cqw .8cqw rgba(0,0,0,.25);
+  touch-action: none; user-select: none; display: grid; place-items: center;
+}
+.g2-tile span, .g2-flying span {
+  display: grid; place-items: center; width: 100%; height: 100%; min-width: 5.4cqw; padding: 0 .6cqw; border-radius: .7cqw;
+  background: linear-gradient(160deg, #fffaf0, #f3e3c4); box-shadow: inset 0 0 0 2px rgba(120,80,40,.22);
+  font-family: var(--font-title); font-weight: 800; line-height: 1; font-size: calc(3.3cqw * var(--fs)); color: #2f6fd6;
+  text-shadow: 0 2px 0 rgba(255,255,255,.9);
+}
+.g2-tile { animation: tileIn .45s cubic-bezier(.2, 1.4, .4, 1) backwards; animation-delay: var(--d); transition: transform .12s, opacity .15s; }
+@keyframes tileIn { from { transform: translateY(60%) scale(.6); opacity: 0; } }
+.g2-tile:hover:not(:disabled) { transform: translateY(-.5cqw) rotate(-3deg); }
+.g2-tile:active:not(:disabled) { cursor: grabbing; }
+.g2-tile.lifted { opacity: .25; }
+.g2-tile.used { visibility: hidden; }
+.g2-tile.shake { animation: shake .4s; }
+.g2-tile.shake span { background: #ffe1dc; }
+.g2-tile.hint { box-shadow: inset 0 .2cqw 0 rgba(255,235,200,.55), 0 .45cqw 0 #5e3b1c, 0 0 0 .5cqw #ffe27a; animation: glow3 .9s infinite alternate; }
+@keyframes glow3 { to { box-shadow: inset 0 .2cqw 0 rgba(255,235,200,.55), 0 .45cqw 0 #5e3b1c, 0 0 0 1cqw #fff3c4; } }
+.g2-drag-ghost {
+  position: fixed; z-index: 300; pointer-events: none; margin: 0; cursor: grabbing; animation: none !important;
+  transform: rotate(-6deg) scale(1.12); box-shadow: 0 1.4cqw 2cqw rgba(0,0,0,.35) !important;
+}
+.g2-flying { position: fixed; z-index: 300; pointer-events: none; transition: transform .3s cubic-bezier(.3, .7, .4, 1), opacity .3s ease-in; }
+
+/* ---------- Màn chọn mức độ / kết quả ---------- */
+.g2-overlay {
+  position: absolute; inset: 0; z-index: 8; display: grid; place-items: center;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.05), rgba(20,40,30,.35));
+}
+.g2-board { padding: 2.4cqw 3.2cqw 2.2cqw; text-align: center; color: #fff8ea; max-width: 70%; }
+.g2-board .g2-sign-rope { height: 30cqw; }
+.g2-board-kicker {
+  display: inline-block; padding: .3cqw 1.6cqw; border-radius: 99px; background: #fff3d6; color: #8a5426;
+  font-family: var(--font-title); font-weight: 800; font-size: 1.5cqw; letter-spacing: .15em; box-shadow: 0 .25cqw 0 #c99a62;
+}
+.g2-board-title {
+  margin: .6cqw 0 .2cqw; font-family: var(--font-title); font-weight: 800; font-size: 5.6cqw; line-height: 1.05;
+  background: linear-gradient(180deg, #8fd3ff, #3a7ee6 55%, #8a5ad8); -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-text-stroke: .25cqw #fff; paint-order: stroke fill; filter: drop-shadow(0 .35cqw 0 #5e3b1c);
+}
+.g2-board-title.small { font-size: 4.2cqw; }
+.g2-board-sub {
+  display: inline-block; margin-top: .4cqw; padding: .4cqw 1.8cqw; border-radius: 99px; background: #fff3d6; color: #6b4a2a;
+  font-family: var(--font-title); font-weight: 700; font-size: 1.6cqw; box-shadow: inset 0 0 0 2px rgba(140,90,40,.25);
+}
+.g2-levels { display: flex; gap: 1.4cqw; justify-content: center; margin-top: 1.8cqw; }
+.g2-level {
+  display: flex; flex-direction: column; align-items: center; gap: .2cqw; padding: 1cqw 1.8cqw; min-width: 12cqw;
+  border: none; border-radius: 1.2cqw; cursor: pointer; color: #5e3b1c;
+  background: linear-gradient(160deg, #fffaf0, #f3e3c4);
+  box-shadow: inset 0 0 0 .2cqw rgba(120,80,40,.25), 0 .5cqw 0 #6e4520, 0 .8cqw 1.2cqw rgba(0,0,0,.25);
+  transition: transform .15s;
+}
+.g2-level:hover { transform: translateY(-.5cqw) rotate(-1.5deg); }
+.g2-level:active { transform: translateY(.2cqw); }
+.g2-level .ico { font-size: 3.4cqw; line-height: 1; }
+.g2-level b { font-family: var(--font-title); font-size: 2.2cqw; }
+.g2-level small { font-weight: 800; font-size: 1.1cqw; opacity: .8; }
+.g2-board .result-stars span { font-size: 6cqw; }
+.g2-board .result-actions { margin-top: 1.4cqw; }
+.g2-review { display: flex; flex-wrap: wrap; gap: .6cqw; justify-content: center; align-items: center; margin-top: 1.2cqw; font-weight: 800; font-size: 1.3cqw; }
+.g2-review .am-chip { font-size: 1.6cqw; }
+
+/* ---------- Màn hình nhỏ: bảng & khay ra ngoài khung cảnh ---------- */
+@media (max-width: 760px) {
+  .g2-stage { width: 100%; aspect-ratio: auto; overflow: visible; box-shadow: none; display: flex; flex-direction: column; gap: 10px; border-radius: 0; }
+  .g2-scene { position: relative; aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden; box-shadow: 0 6px 0 color-mix(in srgb, var(--c) 45%, white); }
+  .g2-hud { position: static; transform: none; order: -1; }
+  .g2-sign { margin-top: 18px; padding: 8px 14px; border-radius: 16px; }
+  .g2-sign-rope { height: 18px; width: 4px; }
+  .g2-sign-dots i { width: 10px; height: 10px; }
+  .g2-pic { width: 64px; height: 64px; font-size: 42px; border-radius: 14px; }
+  .g2-speaker { width: 54px; height: 54px; font-size: 26px; }
+  .g2-hint { width: 42px; height: 42px; font-size: 20px; }
+  .g2-banner { font-size: 15px !important; padding: 6px 14px; white-space: normal; text-align: center; margin-top: 8px; }
+  .g2-dock { position: static; transform: none; max-width: 100%; }
+  .g2-tray { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border-radius: 16px; }
+  .g2-ghost, .g2-letter { font-size: calc(6.2cqw * var(--fs)); }
+  .g2-face { inset: 10% 9% 12%; }
+  .g2-tile { min-width: 56px; height: 56px; padding: 5px; border-radius: 12px; }
+  .g2-tile span { min-width: 44px; font-size: 26px; border-radius: 9px; }
+  .g2-flying span { font-size: 26px; }
+  .g2-overlay { position: fixed; z-index: 60; }
+  .g2-board { max-width: 92%; padding: 22px 18px; border-radius: 18px; }
+  .g2-board-kicker { font-size: 13px; padding: 3px 12px; }
+  .g2-board-title { font-size: 36px; -webkit-text-stroke: 2px #fff; }
+  .g2-board-title.small { font-size: 30px; }
+  .g2-board-sub { font-size: 14px; padding: 4px 12px; }
+  .g2-levels { flex-direction: column; gap: 10px; margin-top: 16px; }
+  .g2-level { min-width: 0; padding: 10px 16px; flex-direction: row; gap: 10px; border-radius: 14px; }
+  .g2-level .ico { font-size: 30px; } .g2-level b { font-size: 20px; } .g2-level small { font-size: 13px; }
+  .g2-board .result-stars span { font-size: 48px; }
+  .g2-review { font-size: 14px; } .g2-review .am-chip { font-size: 16px; }
+  .g2-board .g2-sign-rope { display: none; }
+}

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tiếng Việt Phiêu Lưu Ký – Tiếng Việt lớp 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=41" />
+  <link rel="stylesheet" href="css/stage1.css?v=41" />
+  <link rel="stylesheet" href="css/stage3.css?v=41" />
+  <link rel="stylesheet" href="css/stage5.css?v=41" />
+  <link rel="stylesheet" href="css/stage4.css?v=41" />
+  <link rel="stylesheet" href="css/stage2.css?v=41" />
+</head>
+<body>
+  <!-- Mây trang trí nền -->
+  <div class="sky" aria-hidden="true">
+    <span class="cloud c1"></span><span class="cloud c2"></span><span class="cloud c3"></span>
+  </div>
+
+  <!-- Thanh trên cùng (gộp thông tin bé + lời chào bạn Cú + sao + cài đặt) -->
+  <header class="topbar hidden" id="topbar">
+    <div class="topbar-left">
+      <button class="icon-btn" id="btn-home" title="Trang chủ" aria-label="Trang chủ">🏠</button>
+      <div class="player">
+        <span class="player-avatar" id="player-avatar">🦉</span>
+        <div class="player-info">
+          <small>Nhà thám hiểm</small>
+          <span class="player-name" id="player-name">Bé</span>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="topbar-right">
+      <button class="icon-btn music-btn" id="btn-music" title="Bật/Tắt nhạc nền" aria-label="Bật hoặc tắt nhạc nền">🎵</button>
+      <div class="star-count" title="Tổng số sao đạt được">
+        <span>⭐</span><b id="star-total">0</b><small>/15</small>
+      </div>
+      <button class="icon-btn" id="btn-settings" title="Cài đặt" aria-label="Cài đặt">⚙️</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <!-- ============ MÀN HÌNH CHÀO ============ -->
+    <section class="screen active" id="screen-home">
+      <div class="home-shell pop-in">
+        <div class="home-hero">
+          <div class="home-brand">
+            <img class="mascot mascot-lg bounce" src="assets/img/mascot.png?v=68" alt="Trạng Tý" data-fallback="👦" />
+            <div class="home-titles">
+              <h1 class="title">
+                <span class="t1">Tiếng Việt</span>
+                <span class="t2">Phiêu Lưu Ký</span>
+              </h1>
+              <p class="subtitle">Hành trình 5 chặng chinh phục Tiếng Việt lớp 1</p>
+            </div>
+          </div>
+
+          <div class="home-roadmap" aria-label="5 chặng hành trình">
+            <div class="hr-step" style="--c:#58bf6e"><b>1</b><span>🌳 Rừng chữ cái</span></div>
+            <div class="hr-step" style="--c:#5aa6f0"><b>2</b><span>🌉 Cầu ghép vần</span></div>
+            <div class="hr-step" style="--c:#f27d98"><b>3</b><span>🏡 Ngôi nhà từ ngữ</span></div>
+            <div class="hr-step" style="--c:#9d82ec"><b>4</b><span>🏰 Lâu đài đọc hiểu</span></div>
+            <div class="hr-step" style="--c:#f5b335"><b>5</b><span>💎 Kho báu tri thức</span></div>
+          </div>
+        </div>
+
+        <div class="home-card">
+          <div class="hc-badge">🎒 Thẻ Nhà Thám Hiểm Nhí</div>
+          <label class="name-label" for="input-name">Bé tên là gì nhỉ?</label>
+          <input id="input-name" class="name-input" maxlength="20" placeholder="Nhập tên của bé..." autocomplete="off" />
+
+          <div class="avatar-title">Chọn bạn đồng hành cùng bé:</div>
+          <div class="avatar-pick" id="avatar-pick" role="radiogroup" aria-label="Chọn bạn đồng hành">
+            <button class="avatar-opt selected" data-avatar="👦" title="Trạng Tý thông thái">👦</button>
+            <button class="avatar-opt" data-avatar="🐰" title="Thỏ trắng">🐰</button>
+            <button class="avatar-opt" data-avatar="🐻" title="Gấu nâu">🐻</button>
+            <button class="avatar-opt" data-avatar="🐱" title="Mèo con">🐱</button>
+            <button class="avatar-opt" data-avatar="🐶" title="Cún cưng">🐶</button>
+            <button class="avatar-opt" data-avatar="🦊" title="Cáo nhỏ">🦊</button>
+          </div>
+
+          <button class="btn btn-primary btn-xl home-go" id="btn-start">🚀 Bắt đầu hành trình</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BẢN ĐỒ ============ -->
+    <section class="screen" id="screen-map">
+      <div class="map" id="map">
+        <svg class="map-path" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M 130 426 C 210 415, 240 330, 310 330 S 420 438, 500 438 S 600 294, 680 294 S 790 378, 870 378"
+                fill="none" stroke="rgba(255, 248, 220, 0.72)" stroke-width="22" stroke-linecap="round" />
+          <path d="M 130 426 C 210 415, 240 330, 310 330 S 420 438, 500 438 S 600 294, 680 294 S 790 378, 870 378"
+                fill="none" stroke="#e5a93c" stroke-width="6" stroke-dasharray="2 22" stroke-linecap="round" />
+        </svg>
+
+        <!-- các chặng được tạo bằng JS -->
+      </div>
+    </section>
+
+    <!-- ============ MÀN HÌNH CHẶNG ============ -->
+    <section class="screen" id="screen-stage">
+      <div class="stage-wrap">
+        <div class="stage-head" id="stage-head">
+          <button class="btn btn-ghost" id="btn-back-map">⬅ Bản đồ</button>
+          <div class="stage-title">
+            <span class="stage-num" id="stage-num">Chặng 1</span>
+            <h2 id="stage-name">Rừng chữ cái</h2>
+          </div>
+          <div class="stage-stars" id="stage-stars">☆☆☆</div>
+          <button class="icon-btn stage-settings" id="btn-settings-2" title="Cài đặt" aria-label="Cài đặt">⚙️</button>
+        </div>
+
+        <div class="stage-body">
+          <aside class="stage-side">
+            <img class="stage-cover" id="stage-cover" alt="" />
+            <div class="speech speech-col">
+              <img class="mascot mascot-sm" src="assets/img/mascot.png?v=68" alt="Trạng Tý" data-fallback="👦" />
+              <p class="bubble" id="stage-bubble"></p>
+            </div>
+            <button class="btn btn-soft" id="btn-listen">🔊 Nghe hướng dẫn</button>
+          </aside>
+
+          <div class="stage-play">
+            <div class="play-board" id="play-board">
+              <!-- giao diện xem trước của từng chặng -->
+            </div>
+            <div class="play-foot">
+              <span class="badge-soon">🛠️ Bản xem trước giao diện – trò chơi sẽ được triển khai sau</span>
+              <button class="btn btn-primary" id="btn-play" disabled>▶ Chơi ngay</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ CÀI ĐẶT ============ -->
+  <div class="modal hidden" id="modal-settings" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal-card pop-in">
+      <h3 id="settings-title">⚙️ Cài đặt</h3>
+
+      <label class="switch-row">
+        <span><b>🔊 Giọng đọc</b><small>Đọc hướng dẫn bằng tiếng Việt</small></span>
+        <input type="checkbox" id="set-voice" checked /><i class="switch"></i>
+      </label>
+
+      <div class="set-block">
+        <label class="switch-row flat">
+          <span><b>🗺️ Mở đầu toàn cảnh</b><small>Đọc lời chào Trạng Tý khi mở bản đồ</small></span>
+          <input type="checkbox" id="set-intro-map" checked /><i class="switch"></i>
+        </label>
+        <label class="switch-row flat" style="margin-bottom:0">
+          <span><b>🏰 Mở đầu các chặng</b><small>Đọc lời dẫn Trạng Tý khi vào từng chặng 1–5</small></span>
+          <input type="checkbox" id="set-intro-stage" checked /><i class="switch"></i>
+        </label>
+      </div>
+
+      <div class="set-row">
+        <span><b>🗣️ Giọng mẫu (Chặng 1)</b><small>Chỉ áp dụng cho Chặng 1 & mở đầu toàn cảnh</small></span>
+        <div class="seg" role="radiogroup" aria-label="Chọn giọng">
+          <label><input type="radio" name="set-gender" value="nu" checked /><span>👩 Nữ</span></label>
+          <label><input type="radio" name="set-gender" value="nam" /><span>👨 Nam</span></label>
+        </div>
+      </div>
+
+      <div class="set-block">
+        <label class="switch-row flat">
+          <span><b>🎙️ Âm thanh của tôi</b><small>Ưu tiên giọng tự thêm. Các chặng 2 đến 5 dùng 100% âm thanh tự thêm.</small></span>
+          <input type="checkbox" id="set-custom" checked /><i class="switch"></i>
+        </label>
+        <button class="btn btn-soft btn-block" id="btn-qbank">📝 Soạn câu hỏi các chặng (thêm / xóa)</button>
+        <button class="btn btn-soft btn-block" id="btn-myaudio">📂 Quản lý âm thanh của tôi <span class="pill" id="myaudio-count">0</span></button>
+      </div>
+      <label class="switch-row">
+        <span><b>🎶 Nhạc nền du dương</b><small>Âm nhạc êm dịu, nhẹ nhàng khi bé học và chơi</small></span>
+        <input type="checkbox" id="set-bgm" checked /><i class="switch"></i>
+      </label>
+      <label class="switch-row">
+        <span><b>🎵 Âm thanh hiệu ứng</b><small>Tiếng vỗ tay, tiếng “ting”</small></span>
+        <input type="checkbox" id="set-sfx" checked /><i class="switch"></i>
+      </label>
+      <label class="switch-row">
+        <span><b>🤝 Chế độ hỗ trợ hòa nhập</b><small>Chữ to hơn, không tính giờ, nhiều gợi ý, giảm chuyển động</small></span>
+        <input type="checkbox" id="set-inclusive" /><i class="switch"></i>
+      </label>
+      <label class="switch-row">
+        <span><b>👩‍🏫 Chế độ giáo viên</b><small>Mở khóa tất cả các chặng</small></span>
+        <input type="checkbox" id="set-teacher" checked /><i class="switch"></i>
+      </label>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="btn-reset">🔄 Chơi lại từ đầu</button>
+        <button class="btn btn-primary" id="btn-close-settings">Xong</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ÂM THANH CỦA TÔI ============ -->
+  <div class="modal hidden" id="modal-myaudio" role="dialog" aria-modal="true" aria-labelledby="myaudio-title">
+    <div class="modal-card modal-wide pop-in">
+      <div class="ma-head">
+        <h3 id="myaudio-title">🎙️ Âm thanh của tôi</h3>
+        <button class="am-close" id="ma-close" aria-label="Đóng">✖</button>
+      </div>
+      <p class="ma-help">Bấm <b>🎙️</b> để thu âm, hoặc <b>📁</b> để chọn file (.mp3, .wav, .m4a…). <b>Chặng 1</b> có sẵn giọng mẫu; <b>Chặng 2 đến 5</b> thầy cô tự thêm âm thanh.</p>
+      <div class="ma-tabs" id="ma-tabs">
+        <button class="g1-tab active" data-cat="intro">🌟 Lời mở đầu</button>
+        <button class="g1-tab" data-cat="s1">🌳 Chặng 1</button>
+        <button class="g1-tab" data-cat="ghep">🌉 Chặng 2</button>
+        <button class="g1-tab" data-cat="tu3">🏠 Chặng 3</button>
+        <button class="g1-tab" data-cat="s4">🏰 Chặng 4</button>
+        <button class="g1-tab" data-cat="cau">💎 Chặng 5</button>
+      </div>
+      <div class="ma-sync-status" id="ma-sync-status">
+        <span class="sync-dot"></span>
+        <span id="sync-text">Kiểm tra kết nối thư mục code...</span>
+        <button type="button" class="btn btn-sm btn-ghost" id="btn-open-rieng-folder" title="Mở thư mục assets/audio/rieng trên máy tính">📂 Mở thư mục code</button>
+      </div>
+      <div class="ma-tools">
+        <label class="btn btn-ghost ma-bulk">📥 Thêm nhiều file cùng lúc
+          <input type="file" id="ma-bulk" accept="audio/*" multiple hidden />
+        </label>
+        <button type="button" class="btn btn-ghost" id="btn-export-zip" title="Tải toàn bộ âm thanh thành file ZIP để gửi kèm code">📦 Xuất trọn gói ZIP để gửi</button>
+        <small>Đặt tên file theo mã hoặc chữ, vd: <code>b.mp3</code>, <code>đ.mp3</code>, <code>ngh.mp3</code></small>
+      </div>
+      <div class="ma-list" id="ma-list"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="ma-clear">🗑️ Xóa tất cả</button>
+        <button class="btn btn-primary" id="ma-done">Xong</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Màn mở bài của Trạng Tý ở chính giữa màn hình (làm mờ toàn bộ nền sau và khóa mọi chức năng) -->
+  <div class="map-intro hidden" id="map-intro" role="dialog" aria-modal="true" aria-label="Lời chào mở đầu">
+    <div class="intro-box pop-in">
+      <div class="intro-speech-bar">
+        <img class="mascot intro-owl" src="assets/img/mascot.png" alt="Trạng Tý" data-fallback="👦" />
+        <div class="intro-main-col">
+          <div class="intro-pill" id="intro-bubble"></div>
+          <div class="intro-actions">
+            <button type="button" class="btn btn-primary" id="btn-intro-close">✨ Bắt đầu chọn chặng ▶</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Màn mở đầu của Trạng Tý khi vào từng chặng (làm mờ trò chơi phía sau) -->
+  <div class="map-intro hidden" id="stage-intro" role="dialog" aria-modal="true" aria-label="Lời chào chặng">
+    <div class="intro-box pop-in">
+      <div class="intro-speech-bar">
+        <img class="mascot intro-owl" src="assets/img/mascot.png" alt="Trạng Tý" data-fallback="👦" />
+        <div class="intro-main-col">
+          <div class="intro-stage-tag" id="stage-intro-tag">🌳 CHẶNG 1 – RỪNG CHỮ CÁI</div>
+          <div class="intro-pill intro-pill-stage" id="stage-intro-bubble">
+            <!-- Lời thoại của Trạng Tý được render qua JS -->
+          </div>
+          <div class="intro-actions">
+            <button type="button" class="btn btn-primary btn-xl" id="btn-stage-intro-start">🚀 Bắt đầu Chặng 1 ▶</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="js/stages.js?v=68"></script>
+  <script src="js/data/bang-am.js?v=68"></script>
+  <script src="js/data/tu-ghep.js?v=68"></script>
+  <script src="js/data/tu-ngu.js?v=68"></script>
+  <script src="js/games/stage3.js?v=68"></script>
+  <script src="js/data/cau-sap-xep.js?v=68"></script>
+  <script src="js/games/stage5.js?v=68"></script>
+  <script src="js/data/doc-hieu.js?v=68"></script>
+  <script src="js/games/stage4.js?v=68"></script>
+  <script src="js/games/stage1.js?v=68"></script>
+  <script src="js/games/stage2-scene.js?v=68"></script>
+  <script src="js/games/stage2.js?v=68"></script>
+  <script src="js/app.js?v=68"></script>
+  <script src="js/my-audio.js?v=68"></script>
+  <script src="js/data/cau-hoi-rieng.js?v=68"></script>
+  <script src="js/qbank.js?v=68"></script>
+</body>
+</html>

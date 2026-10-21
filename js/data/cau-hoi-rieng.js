@@ -1,0 +1,2 @@
+/* Bộ câu hỏi tự soạn (thêm / xóa) – tạo tự động từ trình soạn câu hỏi. */
+window.CAU_HOI_RIENG = {"v": 1, "t": 1792598508972, "stages": {"1": {"removed": [], "added": []}, "2": {"removed": ["bo"], "added": [{"w": "u2mviav9v08v1", "tu": "mèo", "m": ["m", "èo"], "hinh": "🐱", "rieng": 1}]}, "3": {"removed": [], "added": []}, "4": {"removed": [], "added": []}, "5": {"removed": ["c03", "c05", "c07", "c08", "c09", "c10", "c11", "c13", "c14", "c21", "c22"], "added": [{"k": "u5mviav8g2axz", "bai": "", "cau": "Bé đi học sớm.", "muc": "de", "rieng": 1}]}}};
