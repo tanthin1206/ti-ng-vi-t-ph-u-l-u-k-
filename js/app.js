@@ -450,7 +450,7 @@
 
   /* Khóa hoàn toàn lướt chuột / cuộn trang */
   window.addEventListener("wheel", e => {
-    if (e.target.closest("#modal-settings, #modal-my-audio, #modal-qbank, .ma-list, .modal-card")) return;
+    if (e.target.closest("#modal-settings, #modal-my-audio, #modal-qbank, .ma-list, .modal-card, #screen-home")) return;
     e.preventDefault();
   }, { passive: false });
 
