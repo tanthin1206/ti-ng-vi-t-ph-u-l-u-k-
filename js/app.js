@@ -12,6 +12,9 @@
     avatar: "👦",
     stars: {},          // { stageId: 0..3 }
     unlocked: 1,        // chặng cao nhất đã mở
+    screen: "home",     // "home" | "map" | "stage"
+    stageId: null,      // 1..5 khi ở screen-stage
+    stageIntroSeen: false, // đã bấm Bắt đầu ở lời mở đầu chặng này chưa
     settings: { voice: true, sfx: true, bgm: true, introMap: true, introStage: true, inclusive: false, teacher: true, gender: "nu", custom: true }
   });
   let state = load();
@@ -500,6 +503,8 @@
       return;
     }
     state.name = name;
+    state.screen = "map";
+    state.stageId = null;
     save();
     playBGM();
     openMap(true);
@@ -684,6 +689,10 @@
   $("#btn-replay-intro")?.addEventListener("click", showMapIntro);
 
   function openMap(greet = false) {
+    state.screen = "map";
+    state.stageId = null;
+    save();
+    setHash("map");
     refreshTopbar();
     renderMap();
     show("screen-map");
@@ -790,6 +799,8 @@
     stopDialogue();
     stopAudio();
     $("#stage-intro")?.classList.add("hidden");
+    state.stageIntroSeen = true;
+    save();
     tyHold = false;
     if (tyPending) { const h = tyPending; tyPending = null; setTimeout(() => tyHint(h), 350); }
     if (typeof stageIntroResolve === "function") {
@@ -803,11 +814,18 @@
 
   /* ---------- Màn hình chặng ---------- */
   let current = null;
-  function openStage(id) {
+  function openStage(id, skipIntro = false) {
     if (!$("#map-intro")?.classList.contains("hidden")) return;
     closeMapIntro();
     const st = STAGES.find(s => s.id === id);
+    if (!st) return;
     current = st;
+    state.screen = "stage";
+    state.stageId = id;
+    if (!skipIntro) state.stageIntroSeen = false;
+    save();
+    setHash(`stage-${id}`);
+
     const wrap = $("#screen-stage");
     wrap.style.setProperty("--c", st.color);
     wrap.style.setProperty("--cd", st.colorDark);
@@ -834,7 +852,7 @@
     wrap.classList.toggle("has-game", !!game);
     show("screen-stage");
     if (game) {
-      tyHold = true;   // giữ gợi ý tới khi bé bấm "Bắt đầu" ở lời mở đầu
+      tyHold = !skipIntro;   // giữ gợi ý tới khi bé bấm "Bắt đầu" ở lời mở đầu
       $("#play-board").innerHTML = "";
       gameCleanup = game.mount($("#play-board"), gameApi(st)) || null;
     } else {
@@ -842,7 +860,12 @@
     }
 
     // Hiển thị lời mở đầu của Trạng Tý làm mờ phần trò chơi phía sau
-    showStageIntro(st.id);
+    if (skipIntro) {
+      closeStageIntro();
+      document.getElementById("btn-stage-intro-start")?.dispatchEvent(new Event("click"));
+    } else {
+      showStageIntro(st.id);
+    }
   }
 
   /* ---------- Trạng Tý đứng ở góc màn hình nói gợi ý (chỉ chữ, không phát âm thanh) ---------- */
@@ -888,7 +911,14 @@
 
   $("#btn-back-map").addEventListener("click", () => { unmountGame(); openMap(); });
   $("#btn-listen").addEventListener("click", () => tyHint(tyLastHint || lastSay.text));
-  $("#btn-home").addEventListener("click", () => { unmountGame(); show("screen-home"); });
+  $("#btn-home").addEventListener("click", () => {
+    unmountGame();
+    state.screen = "home";
+    state.stageId = null;
+    save();
+    setHash("home");
+    show("screen-home");
+  });
 
   /* ---------- Cài đặt ---------- */
   const settingIds = { voice: "#set-voice", sfx: "#set-sfx", bgm: "#set-bgm", introMap: "#set-intro-map", introStage: "#set-intro-stage", inclusive: "#set-inclusive", teacher: "#set-teacher", custom: "#set-custom" };
@@ -935,17 +965,77 @@
   $("#btn-reset").addEventListener("click", () => {
     if (!confirm("Xóa toàn bộ tiến độ và chơi lại từ đầu?")) return;
     const keep = state.settings;
-    state = { ...defaultState(), settings: keep };
+    state = { ...defaultState(), settings: keep, screen: "home", stageId: null, stageIntroSeen: false };
     save();
+    setHash("home");
     $("#input-name").value = "";
     $("#modal-settings").classList.add("hidden");
     unmountGame();
     show("screen-home");
   });
 
+  let isNavigating = false;
+  function setHash(h) {
+    const clean = (h || "").replace(/^#/, "");
+    const cur = (location.hash || "").replace(/^#/, "");
+    if (clean === cur) return;
+    isNavigating = true;
+    try { location.hash = clean; } catch (e) {}
+    setTimeout(() => { isNavigating = false; }, 80);
+  }
+
+  /* Khôi phục lại đúng màn hình trước đó khi F5 tải lại trang */
+  function restoreScreen() {
+    let targetScreen = state.screen || "home";
+    let targetStageId = state.stageId;
+
+    // Nếu localStorage chưa có nhưng URL có hash (vd: người dùng mở trực tiếp link chia sẻ)
+    const hash = (window.location.hash || "").toLowerCase();
+    if (!state.screen || state.screen === "home") {
+      if (hash.startsWith("#stage-")) {
+        const id = parseInt(hash.replace("#stage-", ""), 10);
+        if (id >= 1 && id <= 5) { targetScreen = "stage"; targetStageId = id; }
+      } else if (hash === "#map") {
+        targetScreen = "map";
+      }
+    }
+
+    if (!state.name) {
+      show("screen-home");
+      try { if (location.hash && location.hash !== "#home") history.replaceState(null, "", window.location.pathname); } catch (e) {}
+      return;
+    }
+
+    if (targetScreen === "stage" && targetStageId) {
+      openStage(targetStageId, true);
+    } else if (targetScreen === "map") {
+      openMap(false);
+    } else {
+      show("screen-home");
+    }
+  }
+
+  window.addEventListener("hashchange", () => {
+    if (isNavigating) return;
+    const hash = (window.location.hash || "").toLowerCase();
+    if (hash.startsWith("#stage-")) {
+      const id = parseInt(hash.replace("#stage-", ""), 10);
+      if (id >= 1 && id <= 5 && state.name) openStage(id, true);
+    } else if (hash === "#map" && state.name) {
+      openMap(false);
+    } else if (hash === "#home" || hash === "") {
+      unmountGame();
+      state.screen = "home";
+      state.stageId = null;
+      save();
+      show("screen-home");
+    }
+  });
+
   /* ---------- Khởi động ---------- */
   applySettings();
   refreshTopbar();
+  restoreScreen();
 
   // API công khai để các chặng dùng chung
   window.VQAV = {
