@@ -557,9 +557,9 @@
   let dlg = null;   // phiên thoại đang chạy
   function stopDialogue() { if (dlg) { dlg.dead = true; dlg = null; } }
 
-  function runDialogue(bubble, lines, clipKey, withVoice) {
+  function runDialogue(bubble, lines, clipKey, withVoice, onFinish) {
     stopDialogue();
-    const me = { dead: false, idx: -1, manual: 0 };
+    const me = { dead: false, idx: -1, manual: 0, finished: false };
     dlg = me;
     // Trọng số mỗi câu = số chữ + quãng nghỉ
     const w = lines.map(l => plain(l).length + 12);
@@ -573,6 +573,12 @@
       <div class="dlg-dots">${lines.map(() => "<i></i>").join("")}</div>`;
     const lineEl = bubble.querySelector(".dlg-line");
     const dots = [...bubble.querySelectorAll(".dlg-dots i")];
+
+    function triggerFinish() {
+      if (me.finished || me.dead) return;
+      me.finished = true;
+      if (typeof onFinish === "function") onFinish();
+    }
 
     function show(i) {
       if (i === me.idx || i >= lines.length) return;
@@ -588,7 +594,18 @@
       }
       dots.forEach((d, k) => { d.classList.toggle("on", k === i); d.classList.toggle("done", k < i); });
     }
-    bubble.onclick = () => { if (me.idx < lines.length - 1) { me.manual = me.idx + 1; show(me.manual); } };
+    bubble.onclick = () => {
+      if (me.idx < lines.length - 1) {
+        me.manual = me.idx + 1;
+        show(me.manual);
+        if (me.manual >= lines.length - 1 && (!withVoice || !curAudio || curAudio.ended)) {
+          triggerFinish();
+        }
+      } else {
+        if (withVoice && curAudio) stopAudio();
+        triggerFinish();
+      }
+    };
 
     if (withVoice) speak(plain(lines.join(" ")), clipKey);
     const t0 = performance.now();
@@ -615,7 +632,11 @@
       let i = cum.findIndex(c => pos < c);
       if (i < 0) i = lines.length - 1;
       show(Math.max(i, me.manual, me.idx));
-      if (me.idx < lines.length - 1 || p < 1) requestAnimationFrame(tick);
+      if (me.idx < lines.length - 1 || p < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        triggerFinish();
+      }
     }
     show(0);
     requestAnimationFrame(tick);
@@ -632,12 +653,24 @@
     const mb = $("#map-bubble"); if (mb) mb.textContent = msg;
     const intro = $("#map-intro");
     const introBubble = $("#intro-bubble");
+    const btn = $("#btn-intro-close");
+    if (btn) {
+      btn.classList.add("hidden");
+      btn.classList.remove("pop-in");
+    }
     if (intro) {
       intro.classList.remove("hidden");
       $("#btn-replay-intro")?.classList.add("invisible");
     }
     stopAudio();
-    if (introBubble) runDialogue(introBubble, MAP_GREETING, "chao-ban-do", state.settings.introMap !== false);
+    if (introBubble) {
+      runDialogue(introBubble, MAP_GREETING, "chao-ban-do", state.settings.introMap !== false, () => {
+        if (btn) {
+          btn.classList.remove("hidden");
+          btn.classList.add("pop-in");
+        }
+      });
+    }
   }
 
   function closeMapIntro() {
@@ -735,9 +768,20 @@
     const btn = $("#btn-stage-intro-start");
 
     if (tag) tag.textContent = sp.tag;
-    if (btn) btn.textContent = sp.btn;
+    if (btn) {
+      btn.textContent = sp.btn;
+      btn.classList.add("hidden");
+      btn.classList.remove("pop-in");
+    }
     if (modal) modal.classList.remove("hidden");
-    if (bubble) runDialogue(bubble, sp.paragraphs, sp.audioKey, state.settings.introStage !== false);
+    if (bubble) {
+      runDialogue(bubble, sp.paragraphs, sp.audioKey, state.settings.introStage !== false, () => {
+        if (btn) {
+          btn.classList.remove("hidden");
+          btn.classList.add("pop-in");
+        }
+      });
+    }
 
     return new Promise(res => { stageIntroResolve = res; });
   }

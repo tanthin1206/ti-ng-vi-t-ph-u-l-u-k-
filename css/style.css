@@ -349,6 +349,10 @@ main {
 }
 .intro-actions {
   display: flex; align-items: center; justify-content: center; width: 100%;
+  min-height: 56px;
+}
+#btn-intro-close.pop-in, #btn-stage-intro-start.pop-in {
+  animation: popIn .45s cubic-bezier(.2, 1.4, .4, 1), introPulse 1.8s ease-in-out infinite 0.45s;
 }
 #btn-intro-close, #btn-stage-intro-start {
   font-size: clamp(17px, 1.9vw, 22px); padding: 15px 40px; border-radius: 999px;
