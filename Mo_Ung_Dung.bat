@@ -1,19 +1,29 @@
 @echo off
 chcp 65001 >nul
-title Tiếng Việt Phiêu Lưu Ký - Máy chủ tự lưu âm thanh
+title Tiếng Việt Phiêu Lưu Ký
 cd /d "%~dp0"
+
 echo ========================================================
-echo   TIẾNG VIỆT PHIÊU LƯU KÝ - TỰ ĐỘNG LƯU ÂM THANH VÀO CODE
+echo          TIẾNG VIỆT PHIÊU LƯU KÝ - LỚP 1
 echo ========================================================
-echo Đang khởi động máy chủ tự lưu âm thanh...
-start "" /b python server.py
-timeout /t 1 >nul
-start http://localhost:8080
 echo.
-echo [OK] Máy chủ đang chạy ngầm trên cổng 8080.
-echo Mọi âm thanh bạn thu âm hoặc thêm file trên web
-echo sẽ được TỰ ĐỘNG TẠO BẢN CLONE vào thư mục:
-echo   assets\audio\rieng\
+
+where python >nul 2>nul
+if %errorlevel% equ 0 (
+    echo [*] Đang khởi động máy chủ nội bộ...
+    start "" /b python server.py
+    timeout /t 1 >nul
+    start http://localhost:8080
+    echo [OK] Đã mở ứng dụng: http://localhost:8080
+) else (
+    echo [*] Đang mở ứng dụng bằng trình duyệt web...
+    start "" index.html
+    echo [OK] Đã mở ứng dụng thành công!
+)
+
 echo.
-echo Để gửi cho người khác, bạn chỉ cần nén cả thư mục này lại!
 echo ========================================================
+echo Chúc các bé học tập và vui chơi thật vui vẻ!
+echo (Bạn có thể đóng cửa sổ đen này lại).
+echo ========================================================
+timeout /t 3 >nul

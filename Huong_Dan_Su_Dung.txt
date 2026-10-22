@@ -1,0 +1,30 @@
+========================================================================
+             TIẾNG VIỆT PHIÊU LƯU KÝ - LỚP 1 (BẢN CHẠY OFFLINE)
+========================================================================
+
+CÁCH MỞ VÀ CHƠI TRÊN MÁY TÍNH:
+
+Cách 1 (Khuyên dùng):
+- Bấm đúp vào file: Mo_Ung_Dung.bat
+  Hệ thống sẽ tự động khởi động và mở ứng dụng trên trình duyệt web.
+
+Cách 2:
+- Bấm đúp trực tiếp vào file: index.html
+  (Mở bằng Google Chrome, Cốc Cốc, Microsoft Edge hoặc bất kỳ trình duyệt nào).
+
+------------------------------------------------------------------------
+TÍNH NĂNG VÀ ĐIỂM NỔI BẬT:
+1. Ứng dụng chạy hoàn toàn OFFLINE, KHÔNG CẦN KẾT NỐI MẠNG INTERNET.
+2. Đầy đủ âm thanh giọng đọc Tiếng Việt chuẩn sách giáo khoa, nhạc nền và hiệu ứng.
+3. 5 chặng hành trình:
+   - Chặng 1: Rừng chữ cái (Nghe và chọn âm/chữ cái)
+   - Chặng 2: Cầu ghép vần (Kéo ghép tiếng tạo thành từ)
+   - Chặng 3: Ngôi nhà từ ngữ (Nối từ và tranh ứng dụng)
+   - Chặng 4: Lâu đài đọc hiểu (Đọc đoạn văn và trả lời câu hỏi)
+   - Chặng 5: Kho báu tri thức (Sắp xếp từ thành câu hoàn chỉnh)
+4. Tích hợp bộ công cụ cài đặt riêng trong biểu tượng bánh răng (⚙️):
+   - Quản lý và tự thu âm giọng đọc riêng bằng micro máy tính.
+   - Soạn và thêm/bớt câu hỏi cho từng chặng theo ý giáo viên.
+
+Chúc các bé và thầy cô có những giờ học bổ ích và thú vị!
+========================================================================
